@@ -2,6 +2,7 @@
 
 #define TAMANHO_TABULEIRO 10
 #define TAMANHO_NAVIO 3
+#define TAMANHO_HABILIDADE 5
 
 int main() {
     int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
@@ -14,68 +15,106 @@ int main() {
         }
     }
 
-    // Vetores navios 
+    // Vetores de navios
     int navio_h[TAMANHO_NAVIO] = {3, 3, 3};
     int navio_v[TAMANHO_NAVIO] = {3, 3, 3};
-    int navio_d1[TAMANHO_NAVIO] = {3, 3, 3}; // diagonal ↘
-    int navio_d2[TAMANHO_NAVIO] = {3, 3, 3}; // diagonal ↗
 
-    // Posições iniciais - linha e coluna
-    int linha_h = 2;   
-    int coluna_h = 1;  
-
-    int linha_v = 5;   
-    int coluna_v = 7;  
-
-    int linha_d1 = 0;  
-    int coluna_d1 = 0; 
-
-    int linha_d2 = 9;  
-    int coluna_d2 = 0; 
-
-    // Coloca navio horizontal
+    // Colocando navio horizontal
+    int linha_h = 2, coluna_h = 1;
     for (j = 0; j < TAMANHO_NAVIO; j++) {
         tabuleiro[linha_h][coluna_h + j] = navio_h[j];
     }
 
-    // Coloca navio vertical
+    // Colocando navio vertical
+    int linha_v = 5, coluna_v = 7;
     for (i = 0; i < TAMANHO_NAVIO; i++) {
         tabuleiro[linha_v + i][coluna_v] = navio_v[i];
     }
 
-    // Coloca navio diagonal 
-    for (i = 0; i < TAMANHO_NAVIO; i++) {
-        tabuleiro[linha_d1 + i][coluna_d1 + i] = navio_d1[i];
+    // Habilidade
+    int cone[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE];
+    int cruz[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE];
+    int octaedro[TAMANHO_HABILIDADE][TAMANHO_HABILIDADE];
+
+    // Preenche cone
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            if (j >= (TAMANHO_HABILIDADE / 2 - i) && j <= (TAMANHO_HABILIDADE / 2 + i) && i <= TAMANHO_HABILIDADE/2) {
+                cone[i][j] = 1;
+            } else {
+                cone[i][j] = 0;
+            }
+        }
     }
 
-    // Coloca navio diagonal 
-    for (i = 0; i < TAMANHO_NAVIO; i++) {
-        tabuleiro[linha_d2 - i][coluna_d2 + i] = navio_d2[i];
+    // Preenche cruz
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            if (i == TAMANHO_HABILIDADE / 2 || j == TAMANHO_HABILIDADE / 2) {
+                cruz[i][j] = 1;
+            } else {
+                cruz[i][j] = 0;
+            }
+        }
     }
 
-    // Coordenadas dos navios
-    printf("Coordenadas do navio horizontal:\n");
-    for (j = 0; j < TAMANHO_NAVIO; j++) {
-        printf("  (linha=%d, coluna=%d)\n", linha_h, coluna_h + j);
+    // Preenche octaedro
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            if (abs(i - TAMANHO_HABILIDADE/2) + abs(j - TAMANHO_HABILIDADE/2) <= TAMANHO_HABILIDADE/2) {
+                octaedro[i][j] = 1;
+            } else {
+                octaedro[i][j] = 0;
+            }
+        }
     }
 
-    printf("Coordenadas do navio vertical:\n");
-    for (i = 0; i < TAMANHO_NAVIO; i++) {
-        printf("  (linha=%d, coluna=%d)\n", linha_v + i, coluna_v);
+    // Coordenadas das habilidades 
+    int origem_cone_l = 1, origem_cone_c = 5;
+    int origem_cruz_l = 7, origem_cruz_c = 2;
+    int origem_octa_l = 4, origem_octa_c = 4;
+
+    // Aaplicar habilidade
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            int linha = origem_cone_l + i - TAMANHO_HABILIDADE/2;
+            int coluna = origem_cone_c + j - TAMANHO_HABILIDADE/2;
+            if (linha >= 0 && linha < TAMANHO_TABULEIRO && coluna >= 0 && coluna < TAMANHO_TABULEIRO) {
+                if (cone[i][j] == 1 && tabuleiro[linha][coluna] == 0) {
+                    tabuleiro[linha][coluna] = 5;
+                }
+            }
+        }
     }
 
-    printf("Coordenadas do navio diagonal ↘:\n");
-    for (i = 0; i < TAMANHO_NAVIO; i++) {
-        printf("  (linha=%d, coluna=%d)\n", linha_d1 + i, coluna_d1 + i);
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            int linha = origem_cruz_l + i - TAMANHO_HABILIDADE/2;
+            int coluna = origem_cruz_c + j - TAMANHO_HABILIDADE/2;
+            if (linha >= 0 && linha < TAMANHO_TABULEIRO && coluna >= 0 && coluna < TAMANHO_TABULEIRO) {
+                if (cruz[i][j] == 1 && tabuleiro[linha][coluna] == 0) {
+                    tabuleiro[linha][coluna] = 5;
+                }
+            }
+        }
     }
 
-    printf("Coordenadas do navio diagonal ↗:\n");
-    for (i = 0; i < TAMANHO_NAVIO; i++) {
-        printf("  (linha=%d, coluna=%d)\n", linha_d2 - i, coluna_d2 + i);
+    for (i = 0; i < TAMANHO_HABILIDADE; i++) {
+        for (j = 0; j < TAMANHO_HABILIDADE; j++) {
+            int linha = origem_octa_l + i - TAMANHO_HABILIDADE/2;
+            int coluna = origem_octa_c + j - TAMANHO_HABILIDADE/2;
+            if (linha >= 0 && linha < TAMANHO_TABULEIRO && coluna >= 0 && coluna < TAMANHO_TABULEIRO) {
+                if (octaedro[i][j] == 1 && tabuleiro[linha][coluna] == 0) {
+                    tabuleiro[linha][coluna] = 5;
+                }
+            }
+        }
     }
 
-    // Mostrar tabuleiro
-    printf("\nTabuleiro (0=agua, 3=navio):\n");
+    // Mostra Tabuleiro
+    printf("\nTabuleiro final:\n");
+    printf("0 = agua, 3 = navio, 5 = habilidade\n\n");
+
     for (i = 0; i < TAMANHO_TABULEIRO; i++) {
         for (j = 0; j < TAMANHO_TABULEIRO; j++) {
             printf("%d ", tabuleiro[i][j]);
